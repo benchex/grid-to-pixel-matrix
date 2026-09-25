@@ -36,6 +36,8 @@ This script requires Python 3 and the **OpenCV** library.
 
 Because every source grid asset is built differently, you must pass the exact horizontal grid count (`-w`) and vertical grid count (`-g`).
 
+> 💡 **Supported Input Formats:** This script natively processes any standard image format handled by OpenCV, including `.png`, `.jpg`, `.jpeg`, `.webp`, and `.bmp`. Using `.png` inputs is highly recommended to minimize color distortion caused by compression.
+
 ```bash
 python3 pixelart.py <input_image_path> -w <grid_width> -g <grid_height> [-o <output_name>]
 ```
@@ -44,7 +46,7 @@ python3 pixelart.py <input_image_path> -w <grid_width> -g <grid_height> [-o <out
 If your input template image is an image asset containing a 32x32 layout:
 
 ```bash
-python3 pixelart.py my_template.jpg -w 32 -g 32
+python3 pixelart.py my_template.png -w 32 -g 32
 ```
 
 ### Output Files Produced:
