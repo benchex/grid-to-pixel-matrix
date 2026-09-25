@@ -8,7 +8,7 @@ Unlike standard image downscalers or resizing tools that blur borders and create
 
 ## 🚀 Features
 
-- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact matrix resolution (e.g., 27x30 pixels).
+- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact matrix resolution (e.g., 32x32 pixels).
 - **Zero Grid Bleeding:** Ignores black grid borders and JPEG compression grime by mathematically targeting the dead-center of every single cell.
 - **Automatic Preview Generation:** Automatically saves a high-contrast, upscaled visual preview using `Nearest Neighbor` interpolation so you can check your work on a standard monitor without blurring.
 - **Fully Customizable:** Adapts instantly to any irregular or non-square aspect ratio grid dimensions via command-line arguments.
@@ -40,16 +40,16 @@ Because every source grid asset is built differently, you must pass the exact ho
 python3 pixelart.py <input_image_path> -w <grid_width> -g <grid_height> [-o <output_name>]
 ```
 
-### Example (Wall-E 27x30 Grid)
-If your input template image is a 736×816 JPEG containing a 27x30 layout:
+### Example Usage
+If your input template image is an image asset containing a 32x32 layout:
 
 ```bash
-python3 pixelart.py "Wall-E Pixel Art.jpeg" -w 27 -g 30
+python3 pixelart.py my_template.jpg -w 32 -g 32
 ```
 
 ### Output Files Produced:
-- **`Wall-E Pixel Art_pixel.png`**: The raw **27x30 pixel** image. This is the tight, lossless matrix file you upload straight to your WLED controller or PixelForge layout.
-- **`preview_Wall-E Pixel Art_pixel.png`**: A crisp, cleanly upscaled (16x multiplier) version to easily view, share, or store on your computer.
+- **`my_template_pixel.png`**: The raw **32x32 pixel** image. This is the tight, lossless matrix file you upload straight to your WLED controller or PixelForge layout.
+- **`preview_my_template_pixel.png`**: A crisp, cleanly upscaled (16x multiplier) version to easily view, share, or store on your computer.
 
 ---
 
