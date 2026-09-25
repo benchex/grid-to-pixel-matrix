@@ -1,0 +1,27 @@
+# Python bytecode and caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+ENV/
+.env
+
+# OS-specific hidden system files
+.DS_Store
+Thumbs.db
+
+# Local test images and conversion outputs
+# (Prevents your personal image files from accidentally leaking to GitHub)
+*_pixel.png
+preview_*.png
+*.jpeg
+*.jpg
+*.png
+
+# Exception: Allow the script, README, and LICENSE files
+!.gitignore
+!README.md
+!LICENSE
+!pixelart.py
