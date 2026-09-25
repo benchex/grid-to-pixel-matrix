@@ -1,23 +1,23 @@
 # Grid to Pixel Matrix Converter 👾
 
-A precise, lightweight Python command-line utility designed to convert grid-based template images into flawless, borderless 1:1 pixel art files. It is explicitly optimized to prepare clean source graphics for **WLED panels**, **DIY LED matrices**, and retro game engines.
+A precise, lightweight Python command-line utility designed to convert grid-based pixel art templates into flawless, borderless 1:1 pixel files. It is explicitly optimized to prepare clean source graphics for **WLED displays**, **DIY LED matrices**, and retro game engines.
 
-Unlike standard image downscalers or resizing tools that blur borders and create muddy colors, this script utilizes **pinpoint center-coordinate sampling** to entirely isolate individual grid colors, completely stripping away grid lines and compression artifacts.
+Unlike standard image downscalers or resizing tools that blur borders and create muddy colors, this script utilizes a **top-left cell contour scanner** to automatically calculate grid geometry, then relies on **pinpoint center-coordinate sampling** to entirely isolate pure pixel colors.
 
 ---
 
 ## 🚀 Features
 
-- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact matrix resolution (e.g., 32x32 pixels).
-- **Zero Grid Bleeding:** Ignores black grid borders and JPEG compression grime by mathematically targeting the dead-center of every single cell.
-- **Automatic Preview Generation:** Automatically saves a high-contrast, upscaled visual preview using `Nearest Neighbor` interpolation so you can check your work on a standard monitor without blurring.
-- **Fully Customizable:** Adapts instantly to any irregular or non-square aspect ratio grid dimensions via command-line arguments.
+- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact hardware matrix setup (e.g., 27x30 pixels).
+- **Intelligent Auto-Detection:** Automatically scans the top-left corner of the asset file to calculate cell boundaries and matrix ratios—completely hands-free.
+- **Zero Grid Bleeding:** Targets the dead-center coordinates of every independent square to bypass black gridlines or lossy compression grime entirely.
+- **Automatic Preview Export:** Saves a crisp, high-contrast upscaled version using sharp `Nearest Neighbor` interpolation to easily review on a standard PC monitor without blurring.
 
 ---
 
 ## 📦 Installation
 
-This script requires Python 3 and the **OpenCV** library.
+This script requires Python 3 and the **OpenCV** image processing library.
 
 1. **Clone the repository:**
    ```bash
@@ -34,35 +34,41 @@ This script requires Python 3 and the **OpenCV** library.
 
 ## 🛠️ Usage
 
-Because every source grid asset is built differently, you must pass the exact horizontal grid count (`-w`) and vertical grid count (`-g`).
-
-> 💡 **Supported Input Formats:** This script natively processes any standard image format handled by OpenCV, including `.png`, `.jpg`, `.jpeg`, `.webp`, and `.bmp`. Using `.png` inputs is highly recommended to minimize color distortion caused by compression.
+This utility natively handles standard image formats, including `.png`, `.jpg`, `.jpeg`, and `.webp`.
 
 ```bash
-python3 converter.py <input_image_path> -w <grid_width> -g <grid_height> [-o <output_name>]
+python3 converter.py <input_image_path> [-w <grid_width> -g <grid_height>] [-o <output_name>]
 ```
 
-### Example Usage
-If your input template image is an image asset containing a 32x32 layout:
+### 🤖 Option A: Hands-Free Auto-Detection (Recommended)
+Let the script trace the edge constraints and calculate the grid sizing rules automatically:
 
 ```bash
-python3 converter.py my_template.png -w 32 -g 32
+python3 converter.py pixelart.png
+```
+
+### 📋 Option B: Manual Override Flag
+If an asset template has missing outer grid lines, excessive padding, or dense custom banners, you can override the detector and force specific matrix parameters:
+
+```bash
+python3 converter.py pixelart.png -w 27 -g 30
 ```
 
 ### Output Files Produced:
-- **`my_template_pixel.png`**: The raw **32x32 pixel** image. This is the tight, lossless matrix file you upload straight to your WLED controller or PixelForge layout.
-- **`preview_my_template_pixel.png`**: A crisp, cleanly upscaled (16x multiplier) version to easily view, share, or store on your computer.
+- **`pixelart_matrix.png`**: The raw, tiny uncompressed matrix pixel image file. This is the asset you upload straight to your WLED control dashboard.
+- **`preview_pixelart_matrix.png`**: A crisp, cleanly upscaled (16x scaling multiplier) companion copy to easily view, store, or share.
 
 ---
 
 ## 📐 How the Math Works
 
-When standard image resizing algorithms (`BILINEAR`, `BICUBIC`) handle grid graphics, they average pixels together. This pulls the black grid borders into the color squares, resulting in a dark, stained, or heavily artifacted final matrix.
+When standard image resizing algorithms (`BILINEAR`, `BICUBIC`) handle grid graphics, they average neighbor pixels together. This pulls the black grid borders into the color squares, resulting in a dark, stained, or heavily artifacted final matrix.
 
-This utility completely bypasses resizing arrays:
-1. It calculates the exact decimal pixel step values (`image_width / grid_columns`).
-2. It tracks down the pinpoint floating-point coordinates for the dead center of every single independent square cell (e.g., cell index `+ 0.5`).
-3. It takes a single, isolated color value reading right from that coordinate matrix index and drops it directly onto a brand-new canvas.
+This utility completely bypasses resizing filters:
+1. It analyzes shapes in the top-left quadrant of the image to isolate the pixel area of a single block.
+2. It divides total dimensions by that layout block to extrapolate total columns and rows.
+3. It maps pinpoint floating-point coordinates for the dead center of every single independent square cell (e.g., cell index `+ 0.5`).
+4. It reads a single color value directly from that coordinate index and drops it directly onto a brand-new canvas.
 
 ---
 
