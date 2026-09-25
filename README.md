@@ -2,24 +2,23 @@
 
 A precise, lightweight Python command-line utility designed to convert grid-based pixel art templates into flawless, borderless 1:1 pixel files. It is explicitly optimized to prepare clean source graphics for **WLED displays**, **DIY LED matrices**, and retro game engines.
 
-Unlike standard image downscalers or resizing tools that blur borders and create muddy colors, this script utilizes an **adaptive auto-correlation line-mapper** to automatically map grid geometry, then relies on **pinpoint center-coordinate sampling** to entirely isolate pure pixel colors. It also features a **built-in local AI denoising engine** via Waifu2x to iron out compression grime on low-quality files.
+Unlike standard image downscalers or resizing tools that blur lines and mix adjacent colors, this script utilizes a global **adaptive auto-correlation line-mapper** to automatically discover grid geometry. It then uses **pinpoint coordinate center-sampling** or an area-consensus sieve to completely strip away grid lines and digital noise.
 
 ---
 
 ## 🚀 Features
 
-- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact hardware matrix setup (e.g., 24x24 pixels).
-- **Intelligent Auto-Detection:** Automatically scans the asset canvas using auto-correlation pattern recognition to map line profiles and cell variations—completely hands-free.
-- **Optional Inline AI Denoising:** Pass an optional flag to execute a local Waifu2x neural network model directly in memory to flatten blocky JPEG artifacts before mapping.
-- **Flag-Adaptive Naming:** Automatically appends active configuration parameters (dimensions, noise levels) to output filenames to prevent accidental overwrites during testing.
-- **Zero Grid Bleeding:** Targets the dead-center coordinates of every independent square cell to bypass gridlines or lossy compression grime entirely.
-- **Automatic Preview Export:** Saves a crisp, high-contrast upscaled version using sharp `Nearest Neighbor` interpolation to easily review on a standard PC monitor without blurring.
+- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact hardware matrix setup (e.g., 24x24 or 32x32 pixels).
+- **Intelligent Auto-Detection:** Automatically scans template canvases using cross-correlation signals to map line intervals—completely hands-free.
+- **Inner-Cell Consensus Sieve (`--sieve`):** Aggregates every pixel inside an individual cell block and extracts the mathematical mode (most common color). This entirely flattens textured backgrounds and artifacts without rounding or blurring character details.
+- **Optional Inline AI Denoising (`--denoise`):** Hooks natively into an embedded local Waifu2x neural network port to reconstruct highly broken lines on low-quality web saves in-memory.
+- **Flag-Adaptive Naming:** Automatically stamps active terminal choices (e.g., `_24x24_sieve_matrix.png`) straight onto output assets to prevent file overwrites during calibration sweeps.
 
 ---
 
 ## 📦 Installation
 
-This script requires Python 3, **OpenCV**, and optionally **Waifu2x** for deep-learning artifact removal.
+This script requires Python 3 and the **OpenCV** image processing library wrapper.
 
 1. **Clone the repository:**
    ```bash
@@ -27,7 +26,7 @@ This script requires Python 3, **OpenCV**, and optionally **Waifu2x** for deep-l
    cd grid-to-pixel-matrix
    ```
 
-2. **Install core dependencies & AI models:**
+2. **Install core dependencies:**
    ```bash
    pip install opencv-python numpy waifu2x chainer
    ```
@@ -39,56 +38,57 @@ This script requires Python 3, **OpenCV**, and optionally **Waifu2x** for deep-l
 This utility natively handles standard image formats, including `.png`, `.jpg`, `.jpeg`, and `.webp`.
 
 ```bash
-python3 converter.py <input_image_path> [--width <grid_width> --height <grid_height>] [--denoise] [--noise 0-3] [-o <output_name>]
+python3 converter.py <input_image_path> [--width <grid_width> --height <grid_height>] [--sieve] [--denoise] [--noise 0-3]
 ```
 
-### 🤖 Option A: Hands-Free Auto-Detection (Default / Recommended)
-Let the script trace structural boundaries and map cell profiles automatically:
+### 🤖 Option A: Hands-Free Auto-Detection (Default)
+Let the script trace structural boundaries and map cell profiles automatically using center-point sampling:
 ```bash
-python3 converter.py pixelart.jpg
+python3 converter.py character.png
 ```
 
-### 🧠 Option B: Dynamic AI Denoise (For Muddy JPEGs)
-Run an embedded Waifu2x machine learning filter to wipe out blocky compression textures in-memory before conversion (Default noise strength is 2):
+### 🧹 Option B: Consensus Sieve Processing (Best Visual Results)
+Wipes out all JPEG noise blocks and patchy background textures while keeping character lines razor-sharp:
 ```bash
-python3 converter.py pixelart.jpg --denoise --noise 2
+python3 converter.py character.jpg --sieve
 ```
 
 ### 📋 Option C: Explicit Manual Override
 Bypass automated calculations completely by specifying the exact matrix grid dimensions:
 ```bash
-python3 converter.py pixelart.jpg --width 24 --height 24
+python3 converter.py character.png --width 24 --height 24
 ```
 
-### Output Files Produced:
-- **`pixelart_matrix.png`** (or labeled with active flags like `_denoise_n2_matrix.png`): The raw, tiny uncompressed matrix pixel image file. This is the asset you upload straight to your WLED control dashboard.
-- **`preview_pixelart_matrix.png`**: A crisp, cleanly upscaled (16x scaling multiplier) companion copy to easily view, store, or share on a regular monitor.
+### Output Assets Produced:
+- **`character_matrix.png`** (or flag-labeled like `_sieve_matrix.png`): The raw 1:1 matrix pixel file uploaded right to your WLED control dashboard.
+- **`preview_character_matrix.png`**: A crisp, cleanly upscaled (16x multiplier) copy to easily view, manage, or share on a regular monitor.
 
 ---
 
-## ⚖️ Performance Tradeoffs: When to use AI Denoising
+## ⚖️ Processing Modes Guide
 
-AI preprocessing is a double-edged sword when working with low-resolution matrix grids. Because physical LED panels rely on high-contrast, razor-sharp color transitions to look good to the human eye, review the following guidelines before deploying flags:
+Choose the ideal processing workflow depending on the quality of your source template:
 
-| Setting | 🟢 Pros | 🔴 Cons | Best Used For |
+| Mode Flag | 🛠️ Under the Hood | 🟢 Best For | ❌ Avoid If |
 | :--- | :--- | :--- | :--- |
-| **Standard Mode** (No AI) | Preserves maximum **sharpness** and deliberate shading details on character sprites. | Background fields can retain blocky JPEG compression artifacts. | High-quality templates or crisp source image files. |
-| **Denoise Mode** (`--denoise`) | Perfectly **flattens** noisy, compressed backgrounds into unified solid shades. | Can slightly blur micro-details or soften intentional pixel color steps on smaller features. | Heavily squashed JPEG files where compression noise is disrupting the layout scanners. |
+| **Standard Mode** <br>*(Default)* | **Point-samples** the exact mathematical center of each calculated cell box. | Lossless `.png` sprites or high-quality templates where every pixel is clean. | The image background has messy, patchy compression textures. |
+| **Consensus Sieve** <br>`--sieve` | Takes a **majority color vote** across the entire inner cell area, ignoring grid lines. | Flattening patchy background noise while keeping sharp character outlines. | The character has ultra-thin features (like a 1-pixel mouth) that might lose the vote. |
+| **AI Denoise** <br>`--denoise` | Passes the image through a local **Waifu2x neural network** to repair line paths. | Heavily squashed JPEGs where the auto-detector fails to calculate the grid size. | You want to preserve exact, razor-sharp pixel shading inside the artwork. |
 
 ---
 
-## 📐 How the Math Works
+## 💡 Troubleshooting Outliers (Photographed Templates)
 
-When standard image resizing algorithms (`BILINEAR`, `BICUBIC`) handle grid graphics, they average neighbor pixels together. This pulls the blurry grid borders into the color squares, resulting in a dark, stained, or heavily artifacted final matrix display.
+This script assumes a uniform, mathematically straight linear grid. If you attempt to process a template that is a **photograph of a physical book** or an image with **warped perspective lines** (such as a skewed camera shot), linear mapping arrays will naturally drift, hitting the gridlines.
 
-This utility completely bypasses resizing filters:
-1. If `--denoise` is flag-active, it passes the source image through a local, offline machine learning port to reconstruct squashed structural details.
-2. It analyzes global Sobel gradient profiles across structural strips to build a cross-correlation profile, determining the fundamental repeating pattern (cell size).
-3. It maps pinpoint floating-point coordinates for the dead center of every single independent square cell (e.g., cell index `+ 0.5`).
-4. It reads a single color value directly from that center coordinate and drops it directly onto a brand-new canvas.
+For warped perspective images, you can bypass the script entirely and force your computer to handle the pixel consensus pooling by running this one-line resizing bypass in your terminal to instantly generate your 1:1 hardware matrix file:
+
+```bash
+python3 -c "import cv2; img=cv2.imread('warped_photo.jpg'); cv2.imwrite('clean_matrix.png', cv2.resize(img, (TARGET_WIDTH, TARGET_HEIGHT), interpolation=cv2.INTER_AREA))"
+```
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)** - see the [LICENSE](LICENSE) file for details. Closed-source commercialization of this tool is strictly prohibited.
