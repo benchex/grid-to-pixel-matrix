@@ -8,7 +8,7 @@ Unlike standard image downscalers or resizing tools that blur borders and create
 
 ## 🚀 Features
 
-- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact hardware matrix setup (e.g., 27x30 pixels).
+- **True 1:1 Pixel Mapping:** Outputs a raw, lossless `.png` matching your exact hardware matrix setup (e.g., 32x32 pixels).
 - **Intelligent Auto-Detection:** Automatically scans the top-left corner of the asset file to calculate cell boundaries and matrix ratios—completely hands-free.
 - **Zero Grid Bleeding:** Targets the dead-center coordinates of every independent square to bypass black gridlines or lossy compression grime entirely.
 - **Automatic Preview Export:** Saves a crisp, high-contrast upscaled version using sharp `Nearest Neighbor` interpolation to easily review on a standard PC monitor without blurring.
@@ -51,7 +51,7 @@ python3 converter.py pixelart.png
 If an asset template has missing outer grid lines, excessive padding, or dense custom banners, you can override the detector and force specific matrix parameters:
 
 ```bash
-python3 converter.py pixelart.png -w 27 -g 30
+python3 converter.py pixelart.png -w 32 -g 32
 ```
 
 ### Output Files Produced:
@@ -74,4 +74,10 @@ This utility completely bypasses resizing filters:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. 
+
+### What this means:
+- 🔓 **Reciprocity:** Anyone can use, modify, and distribute your code for free.
+- 📦 **Copyleft Protection:** If anyone modifies this converter or integrates it into another software project, **their entire project must also be open-sourced under the exact same GPL-3.0 license.** Closed-source corporate commercialization of this tool is strictly prohibited.
+
+See the [LICENSE](LICENSE) file for the full legal text.
