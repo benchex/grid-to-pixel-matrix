@@ -77,7 +77,7 @@ This utility completely bypasses resizing filters:
 This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**. 
 
 ### What this means:
-- 🔓 **Reciprocity:** Anyone can use, modify, and distribute your code for free.
+- 🔓 **Reciprocity:** Anyone can use, modify, and distribute this code for free.
 - 📦 **Copyleft Protection:** If anyone modifies this converter or integrates it into another software project, **their entire project must also be open-sourced under the exact same GPL-3.0 license.** Closed-source corporate commercialization of this tool is strictly prohibited.
 
 See the [LICENSE](LICENSE) file for the full legal text.
